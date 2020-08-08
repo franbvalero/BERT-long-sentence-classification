@@ -1,7 +1,6 @@
 import math
 import os
 import pandas as pd
-from .preprocess import preprocess_tas
 from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import TensorDataset
@@ -104,13 +103,7 @@ def generate_dataset_20newsgroup_segments(X, Y, num_segments, tokenizer, pad_to_
 
 def get_dataset(tokenizer, dataset, pad_to_max_length=True, add_special_tokens=True, max_length=256, return_attention_mask=True, return_tensors='pt',
     seed=42, train_size=0.9, shuffle=True, use_token_type_ids=False):
-    if dataset == "twitter_airline_sentiment":
-        input_tweets, output_labels, label2id = preprocess_tas()
-        X_train, X_test, y_train, y_test = train_test_split(input_tweets, output_labels, train_size=train_size, random_state=seed, shuffle=shuffle)
-    elif dataset in variations_20newsgroup:
-        X_train, y_train, X_test, y_test, label2id = _load_20newsgroup(dataset, max_length=max_length)
-    else:
-        raise Exception(f"Incorrect dataset: {dataset}! only valid: twitter_airline_sentiment and 20newsgroup.")
+    X_train, y_train, X_test, y_test, label2id = _load_20newsgroup(dataset, max_length=max_length)
     num_train_examples, num_test_examples = len(y_train), len(y_test)
     train_set = generate_dataset(X_train, y_train, tokenizer, pad_to_max_length=pad_to_max_length, add_special_tokens=add_special_tokens, 
         max_length=max_length, return_attention_mask=return_attention_mask, return_tensors=return_tensors, use_token_type_ids=use_token_type_ids)

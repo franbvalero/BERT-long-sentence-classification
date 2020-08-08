@@ -8,7 +8,7 @@ import torch
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("dataset", type=str, choices=['twitter_airline_sentiment', '20_simplified', '6_simplified'], help="Dataset selected.")
+    parser.add_argument("dataset", type=str, choices=['20_simplified', '6_simplified'], help="Dataset selected.")
     parser.add_argument("model_type", type=str, choices=['bert', 'distilbert'], help="Petrained natural language model type selected.")
     parser.add_argument("--output_dir", type=str, default="./saved_models", help="The output directory where the results and checkpoints will be written.")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size.")
@@ -25,7 +25,6 @@ def main():
     args = parser.parse_args()
 
     dataset2num_labels = {
-        'twitter_airline_sentiment': 3,
         '20_simplified': 20,
         '6_simplified': 6,
     }

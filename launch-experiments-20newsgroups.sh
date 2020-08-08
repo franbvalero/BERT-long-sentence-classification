@@ -37,8 +37,8 @@ then
     python3 preprocess_20newsgroups.py ${root_data} --threshold ${threshold}
 fi
 
-datasets=('6_simplified' '20_simplified')
-model_types=('bert' 'distilbert')
+dataset='20_simplified'
+model_type='bert'
 output_dir='./saved_models'
 batch_size=16
 max_length=512
@@ -49,13 +49,6 @@ num_train_epochs=10
 num_warmup_steps=0
 max_grad_norm=1
 
-for dataset in "${datasets[@]}"
-do
-    for model_type in "${model_types[@]}"
-    do
-        echo "${dataset} - ${model_type}"
-        python3 training_plmc.py ${dataset} ${model_type} --output_dir ${output_dir} --batch_size ${batch_size} \
-        --max_length ${max_length} --learning_rate ${learning_rate} --adam_epsilon ${adam_epsilon} --num_train_epochs ${num_train_epochs} \
-        --num_warmup_steps ${num_warmup_steps} --max_grad_norm ${max_grad_norm} --weight_decay ${weight_decay} --lowercase
-    done
-done
+python3 training_plmc.py ${dataset} ${model_type} --output_dir ${output_dir} --batch_size ${batch_size} \
+--max_length ${max_length} --learning_rate ${learning_rate} --adam_epsilon ${adam_epsilon} --num_train_epochs ${num_train_epochs} \
+--num_warmup_steps ${num_warmup_steps} --max_grad_norm ${max_grad_norm} --weight_decay ${weight_decay} --lowercase

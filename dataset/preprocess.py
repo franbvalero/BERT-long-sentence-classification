@@ -4,11 +4,7 @@ from nltk.tokenize import TweetTokenizer, word_tokenize
 import numpy as np
 import os
 import pandas as pd
-import preprocessor as p
-import re
 import shutil
-
-p.set_options(p.OPT.URL, p.OPT.MENTION, p.OPT.HASHTAG, p.OPT.RESERVED, p.OPT.EMOJI, p.OPT.SMILEY, p.OPT.NUMBER)
 
 twenty_to_six = {
     "comp.graphics": "comp",
@@ -33,23 +29,6 @@ twenty_to_six = {
     "soc.religion.christian": "religion",
 }
 
-def preprocess_tas(file_name="./data/twitter_airline_sentiment/Tweets.csv"):
-    df = pd.read_csv(file_name, delimiter=',')
-    data_tweets = df.text
-    data_labels = df.airline_sentiment
-    label2id = {label_:id_ for (id_, label_) in enumerate(df.airline_sentiment.unique())}
-    output_labels = list(map(lambda label: label2id[label], data_labels))
-    input_tweets = []
-    tweet_tokenizer = TweetTokenizer(strip_handles=False, reduce_len=True, preserve_case=False)
-    for tweet_ in data_tweets:
-        tweet_ = p.clean(tweet_)
-        tweet_tokens = tweet_tokenizer.tokenize(tweet_)
-        tweet_tokens = list(filter(lambda token: not token.isdigit(), tweet_tokens)) # remove numbers
-        tweet_tokens = list(filter(lambda token: len(token) > 1 and any(c.isalpha() for c in token) and not any(c.isdigit() for c in token), tweet_tokens)) # remove not words, keept compound words and abbreviation
-        preprocessed_tweet = " ".join(tweet_tokens)
-        input_tweets.append(preprocessed_tweet)
-    return input_tweets, output_labels, label2id
-
 def _load_vocabulary(file_name, encoding='utf-8'):
     with open(file_name, 'r') as inpf:
         vocab = frozenset({word.strip() for word in inpf})
@@ -66,27 +45,7 @@ def _clean_new(new_file_name, vocabulary, encoding='utf-8'):
                 if line.startswith(prefixes) or line.endswith(suffixes):
                     continue
                 else:
-                    refined_line = clean(
-                        line,
-                        fix_unicode=True,
-                        to_ascii=True,
-                        lower=False,
-                        no_line_breaks=True,
-                        no_urls=True,
-                        no_emails=True,
-                        no_phone_numbers=True,
-                        no_numbers=True,
-                        no_digits=True,
-                        no_currency_symbols=True,
-                        no_punct=False,
-                        replace_with_url="",
-                        replace_with_email="",
-                        replace_with_phone_number="",
-                        replace_with_number="",
-                        replace_with_digit="",
-                        replace_with_currency_symbol="",
-                        lang="en",
-                    )
+                    refined_line = clean(line)
                     tokenized_line = word_tokenize(refined_line, language="english")
                     cleaned_line = " ".join(filter(lambda token: token in vocabulary, tokenized_line))
                     lines.append(cleaned_line)

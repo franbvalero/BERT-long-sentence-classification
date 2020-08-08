@@ -15,34 +15,24 @@ import torch.optim
 from torch.autograd import Variable
 from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import BertForSequenceClassification, BertTokenizer,BertModel
-from transformers import DistilBertForSequenceClassification, DistilBertTokenizer
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig, AutoModel
 from transformers import AdamW, get_linear_schedule_with_warmup
 from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence, PackedSequence
 
 from utils import save_metric_plot, save_confusion_matrix_plot
 
 MODEL_CLASSES = {
-    'bert': ("bert-base-uncased", BertForSequenceClassification, BertTokenizer),
-    'distilbert': ("distilbert-base-uncased", DistilBertForSequenceClassification, DistilBertTokenizer),
+    'bert': ("bert-base-uncased"),
+    'distilbert': ("distilbert-base-uncased"),
 }
 
 def petrained_language_model_classifier(model_name, num_labels, output_attentions=False, output_hidden_states=False, lowercase=True, cache_dir=None):
-    petrained_model_name, sequence_classifier_class, tokenizer_class = MODEL_CLASSES[model_name]
+    pretrained_model_name = MODEL_CLASSES[model_name]
     # petrained tokenizer
-    model_tokenizer = tokenizer_class.from_pretrained(
-        petrained_model_name, 
-        do_lower_case=lowercase,
-        cache_dir=cache_dir,
-    )
+    model_tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
     # petrained sequence classifier
-    model_classifier = sequence_classifier_class.from_pretrained(
-        petrained_model_name,
-        num_labels=num_labels,
-        output_attentions=output_attentions,
-        output_hidden_states=output_hidden_states,
-        cache_dir=cache_dir,
-    )
+    config = AutoConfig.from_pretrained(pretrained_model_name)
+    model_classifier = AutoModelForSequenceClassification.from_pretrained(pretrained_model_name, config=config)
     return model_tokenizer, model_classifier
 
 
@@ -56,8 +46,9 @@ class RoBert(nn.Module):
     def __init__(self, num_labels, bert_pretrained="bert-base-uncased", device="cpu", lstm_hidden_dim=1024, dense_hidden_dim=32, 
         num_lstm_layers=1, num_dense_layers=2):
         super(RoBert, self).__init__()
-        self._petrained_language_model = BertModel.from_pretrained(bert_pretrained)
-        self._tokenizer = BertTokenizer.from_pretrained(bert_pretrained)
+        self._tokenizer = AutoTokenizer.from_pretrained(bert_pretrained)
+        config = AutoConfig.from_pretrained(bert_pretrained)
+        self._petrained_language_model = AutoModel.from_config(config)
         self.device = device
         self.num_labels = num_labels
         self.size_petrained = self._petrained_language_model.config.hidden_size

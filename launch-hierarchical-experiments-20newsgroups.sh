@@ -41,7 +41,7 @@ then
     done
 fi
 
-datasets=('6_simplified' '20_simplified')
+dataset='20_simplified'
 output_dir='./saved_models'
 batch_size=16
 learning_rate=5e-5
@@ -66,14 +66,10 @@ reduced_factor_lstm=0.95
 
 for max_length in "${thresholds[@]}"
 do    
-    for dataset in "${datasets[@]}"
-    do        
-        echo "${dataset} - robert"
-        python3 training_robert.py ${dataset} ${pretrained_model} --output_dir ${output_dir} --batch_size ${batch_size} \
-        --max_length ${max_length} --learning_rate ${learning_rate} --adam_epsilon ${adam_epsilon} --num_train_epochs ${num_train_epochs} \
-        --num_warmup_steps ${num_warmup_steps} --max_grad_norm ${max_grad_norm} --weight_decay ${weight_decay} --lowercase \
-        --size_segment ${size_segment} --size_shift ${size_shift} --lstm_hidden_dim ${lstm_hidden_dim} --dense_hidden_dim ${dense_hidden_dim} \
-        --num_lstm_layers ${num_lstm_layers} --num_dense_layers ${num_dense_layers} --lr_lstm ${lr_lstm} --epochs_decrease_lr_lstm ${epochs_decrease_lr_lstm} \
-        --reduced_factor_lstm ${reduced_factor_lstm}
-    done
+    python3 training_robert.py ${dataset} ${pretrained_model} --output_dir ${output_dir} --batch_size ${batch_size} \
+    --max_length ${max_length} --learning_rate ${learning_rate} --adam_epsilon ${adam_epsilon} --num_train_epochs ${num_train_epochs} \
+    --num_warmup_steps ${num_warmup_steps} --max_grad_norm ${max_grad_norm} --weight_decay ${weight_decay} --lowercase \
+    --size_segment ${size_segment} --size_shift ${size_shift} --lstm_hidden_dim ${lstm_hidden_dim} --dense_hidden_dim ${dense_hidden_dim} \
+    --num_lstm_layers ${num_lstm_layers} --num_dense_layers ${num_dense_layers} --lr_lstm ${lr_lstm} --epochs_decrease_lr_lstm ${epochs_decrease_lr_lstm} \
+    --reduced_factor_lstm ${reduced_factor_lstm}
 done

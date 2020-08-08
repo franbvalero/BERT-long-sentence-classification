@@ -76,7 +76,7 @@ def main():
             
     os.makedirs(model_path)
 
-    id2label = { value:key for (key, value) in label2id.items()}
+    id2label = {value:key for (key, value) in label2id.items()}
     
     train(model_classifier, train_set, validation_set, device, model_path, id2label, batch_size=args.batch_size, weight_decay=args.weight_decay, 
         num_train_epochs=args.num_train_epochs, lr=args.learning_rate, eps=args.adam_epsilon, num_warmup_steps=args.num_warmup_steps, 
