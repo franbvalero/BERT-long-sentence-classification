@@ -244,6 +244,7 @@ def train(model, train_inputs, validation_inputs, device, path_model, id2label, 
             optimizer.zero_grad()
             
             if robert:
+                optimizer_lstm.zero_grad()
                 inputs['num_segments'] = batch_train[3]
                 loss, logits = model(inputs)
             else:
